@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoadingSpinner } from '../ui/LoadingSpinner';
@@ -10,10 +10,15 @@ export const KakaoCallback = () => {
     const [searchParams] = useSearchParams();
     const { login } = useAuth();
     const [isProcessing, setIsProcessing] = useState(true);
+    const hasProcessedRef = useRef(false);
 
     useEffect(() => {
+        // 이미 처리된 경우 중복 실행 방지
+        if (hasProcessedRef.current) return;
+
         const handleCallback = async () => {
             try {
+                hasProcessedRef.current = true;
                 const code = searchParams.get('code');
                 const error = searchParams.get('error');
 
@@ -36,8 +41,10 @@ export const KakaoCallback = () => {
                 const success = await login(code);
 
                 if (success) {
+                    toast.success('로그인에 성공했습니다! 🎉');
                     navigate('/dashboard');
                 } else {
+                    toast.error('로그인에 실패했습니다. 다시 시도해 주세요.');
                     navigate('/');
                 }
             } catch (error) {

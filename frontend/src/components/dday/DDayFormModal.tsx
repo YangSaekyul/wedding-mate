@@ -86,30 +86,53 @@ export const DDayFormModal = ({
                     {/* 폼 */}
                     <form onSubmit={handleSubmit(handleFormSubmit)} className="p-6 space-y-4">
                         {/* 제목 */}
-                        <Input
-                            label="D-DAY 제목"
-                            placeholder="예: 결혼식, 신혼여행, 프로포즈..."
-                            {...register('title', {
-                                required: '제목을 입력해 주세요.',
-                                maxLength: {
-                                    value: 50,
-                                    message: '제목은 50자 이내로 입력해 주세요.'
-                                }
-                            })}
-                            error={errors.title?.message}
-                            disabled={isLoading}
-                        />
+                        <div>
+                            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                                D-DAY 제목 <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                id="title"
+                                type="text"
+                                placeholder="예: 결혼식, 신혼여행, 프로포즈..."
+                                className={`block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 ${errors.title
+                                        ? 'border-red-300 bg-red-50 text-red-900 placeholder-red-400 focus:border-red-500 focus:ring-red-500'
+                                        : 'border-gray-300 bg-white placeholder-gray-400 focus:border-primary-500 focus:ring-primary-500'
+                                    }`}
+                                {...register('title', {
+                                    required: '제목을 입력해 주세요.',
+                                    maxLength: {
+                                        value: 50,
+                                        message: '제목은 50자 이내로 입력해 주세요.'
+                                    }
+                                })}
+                                disabled={isLoading}
+                            />
+                            {errors.title && (
+                                <p className="mt-1 text-sm text-red-600">{errors.title.message}</p>
+                            )}
+                        </div>
 
                         {/* 날짜 */}
-                        <Input
-                            type="date"
-                            label="목표 날짜"
-                            {...register('target_date', {
-                                required: '날짜를 선택해 주세요.'
-                            })}
-                            error={errors.target_date?.message}
-                            disabled={isLoading}
-                        />
+                        <div>
+                            <label htmlFor="target_date" className="block text-sm font-medium text-gray-700 mb-1">
+                                목표 날짜 <span className="text-red-500">*</span>
+                            </label>
+                            <input
+                                id="target_date"
+                                type="date"
+                                className={`block w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus:outline-none focus:ring-1 ${errors.target_date
+                                        ? 'border-red-300 bg-red-50 text-red-900 placeholder-red-400 focus:border-red-500 focus:ring-red-500'
+                                        : 'border-gray-300 bg-white placeholder-gray-400 focus:border-primary-500 focus:ring-primary-500'
+                                    }`}
+                                {...register('target_date', {
+                                    required: '날짜를 선택해 주세요.'
+                                })}
+                                disabled={isLoading}
+                            />
+                            {errors.target_date && (
+                                <p className="mt-1 text-sm text-red-600">{errors.target_date.message}</p>
+                            )}
+                        </div>
 
                         {/* 설명 */}
                         <div>

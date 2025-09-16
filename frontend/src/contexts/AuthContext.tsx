@@ -54,11 +54,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setToken(token);
             setUser(userData);
 
-            toast.success(`${userData.nickname}님, 환영합니다! 🎉`);
+            // 토스트는 KakaoCallback에서 처리하므로 여기서는 제거
             return true;
         } catch (error) {
             console.error('로그인 실패:', error);
-            toast.error('로그인에 실패했습니다. 다시 시도해 주세요.');
+            // 토스트는 KakaoCallback에서 처리하므로 여기서는 제거
             return false;
         } finally {
             setIsLoading(false);
