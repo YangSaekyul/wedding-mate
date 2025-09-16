@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { DDay, CreateDDayForm } from '../../types';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 import { formatInputDate, getTodayInputFormat } from '../../lib/utils';
 import { X } from 'lucide-react';
 

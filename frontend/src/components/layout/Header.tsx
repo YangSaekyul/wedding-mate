@@ -1,7 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/Button';
 import { LogOut, User } from 'lucide-react';
 
 export const Header = () => {
