@@ -54,6 +54,12 @@ export class KakaoAuthService {
     static getAuthUrl(): string {
         this.validateEnvVars();
 
+        // 디버깅을 위한 로그 추가
+        console.log('=== 카카오 OAuth 디버그 정보 ===');
+        console.log('KAKAO_CLIENT_ID:', KAKAO_CLIENT_ID);
+        console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+
         const params = new URLSearchParams({
             client_id: KAKAO_CLIENT_ID!,
             redirect_uri: KAKAO_REDIRECT_URI!,
@@ -61,7 +67,11 @@ export class KakaoAuthService {
             scope: 'profile_nickname,profile_image,account_email'
         });
 
-        return `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+        const authUrl = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+        console.log('생성된 인증 URL:', authUrl);
+        console.log('================================');
+
+        return authUrl;
     }
 
     // 인증 코드로 액세스 토큰 획득
