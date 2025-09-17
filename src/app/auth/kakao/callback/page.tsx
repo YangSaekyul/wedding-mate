@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import toast from 'react-hot-toast';
 
-export default function KakaoCallbackPage() {
+function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { login } = useAuth();
@@ -20,6 +20,14 @@ export default function KakaoCallbackPage() {
         const handleCallback = async () => {
             try {
                 hasProcessedRef.current = true;
+                
+                // searchParams가 null인 경우 처리
+                if (!searchParams) {
+                    toast.error('인증 정보를 받지 못했습니다.');
+                    router.push('/');
+                    return;
+                }
+                
                 const code = searchParams.get('code');
                 const error = searchParams.get('error');
 
@@ -85,4 +93,26 @@ export default function KakaoCallbackPage() {
     }
 
     return null;
+}
+
+export default function KakaoCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4">
+                    <div className="text-center">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl mb-4">
+                            <span className="text-2xl font-bold text-white">💒</span>
+                        </div>
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                            로딩 중...
+                        </h2>
+                        <LoadingSpinner size="lg" />
+                    </div>
+                </div>
+            </div>
+        }>
+            <CallbackContent />
+        </Suspense>
+    );
 }

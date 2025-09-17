@@ -3,6 +3,8 @@ import { UserModel } from '@/lib/models/User';
 import { verifyToken, extractTokenFromHeader } from '@/lib/utils/jwt';
 import { initDatabase } from '@/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         // 데이터베이스 초기화

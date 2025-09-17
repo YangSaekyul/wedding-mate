@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { apiClient, getErrorMessage } from '@/lib/api';
 import toast from 'react-hot-toast';
 
@@ -73,9 +74,11 @@ export const KakaoLogin = () => {
                             <span className="text-gray-900 font-medium">로그인 중...</span>
                         </div>
                     ) : (
-                        <img
+                        <Image
                             src="/assets/kakao/kakao_login_large_wide.png"
                             alt="카카오로 로그인"
+                            width={300}
+                            height={60}
                             className="w-full h-auto"
                         />
                     )}

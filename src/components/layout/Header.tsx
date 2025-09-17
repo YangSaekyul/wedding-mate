@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User } from 'lucide-react';
 
@@ -35,9 +36,11 @@ export const Header = () => {
                             className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
                         >
                             {user?.profile_image ? (
-                                <img
+                                <Image
                                     src={user.profile_image}
                                     alt={user.nickname}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-full"
                                 />
                             ) : (

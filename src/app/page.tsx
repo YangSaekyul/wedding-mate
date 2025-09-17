@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { LoginPage } from '@/pages/LoginPage';
+import { KakaoLogin } from '@/components/auth/KakaoLogin';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -32,5 +32,11 @@ export default function HomePage() {
     return null; // 리다이렉트 중
   }
 
-  return <LoginPage />;
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <KakaoLogin />
+      </div>
+    </div>
+  );
 }

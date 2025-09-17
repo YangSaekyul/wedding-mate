@@ -3,6 +3,8 @@ import { DDayModel } from '@/lib/models/DDay';
 import { verifyToken, extractTokenFromHeader } from '@/lib/utils/jwt';
 import { initDatabase } from '@/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 // 특정 D-DAY 조회
 export async function GET(
     request: NextRequest,

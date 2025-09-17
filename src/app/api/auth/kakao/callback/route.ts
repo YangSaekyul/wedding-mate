@@ -4,6 +4,8 @@ import { UserModel, CreateUserData } from '@/lib/models/User';
 import { generateToken } from '@/lib/utils/jwt';
 import { initDatabase } from '@/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     try {
         // 데이터베이스 초기화

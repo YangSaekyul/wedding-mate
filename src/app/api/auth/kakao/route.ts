@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { KakaoAuthService } from '@/lib/services/kakaoAuth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
         const authUrl = KakaoAuthService.getAuthUrl();
