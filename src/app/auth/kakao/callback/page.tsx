@@ -6,6 +6,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import toast from 'react-hot-toast';
 
+// 환경에 따른 리다이렉트 URL 결정
+const getRedirectUrl = () => {
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3000/dashboard';
+    }
+    return '/dashboard';
+};
+
 function CallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -51,7 +59,8 @@ function CallbackContent() {
 
                 if (success) {
                     toast.success('로그인에 성공했습니다! 🎉');
-                    router.push('/dashboard');
+                    const redirectUrl = getRedirectUrl();
+                    router.push(redirectUrl);
                 } else {
                     toast.error('로그인에 실패했습니다. 다시 시도해 주세요.');
                     router.push('/');

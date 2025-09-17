@@ -1,5 +1,31 @@
 import axios from 'axios';
 
+// 환경에 따른 base URL 결정 함수
+const getBaseUrl = () => {
+    // 환경변수에서 직접 설정된 리다이렉트 URI가 있다면 그것을 사용
+    if (process.env.KAKAO_REDIRECT_URI) {
+        try {
+            const url = new URL(process.env.KAKAO_REDIRECT_URI);
+            return url.origin;
+        } catch (e) {
+            console.warn('KAKAO_REDIRECT_URI 파싱 실패:', e);
+        }
+    }
+
+    // 개발 환경
+    if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3000';
+    }
+    
+    // Vercel 배포 환경
+    if (process.env.VERCEL_URL) {
+        return `https://${process.env.VERCEL_URL}`;
+    }
+
+    // 프로덕션 환경의 기본값
+    return 'https://our-wedding-mate.vercel.app';
+};
+
 export interface KakaoTokenResponse {
     access_token: string;
     token_type: string;
@@ -34,14 +60,20 @@ export interface KakaoUserProfile {
 
 const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI;
+const BASE_URL = getBaseUrl();
+const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI || `${BASE_URL}/auth/kakao/callback`;
 
 // 환경변수 로딩 디버그 로그
 console.log('=== 환경변수 로딩 디버그 ===');
-console.log('process.env.KAKAO_CLIENT_ID:', process.env.KAKAO_CLIENT_ID);
-console.log('process.env.KAKAO_REDIRECT_URI:', process.env.KAKAO_REDIRECT_URI);
-console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
-console.log('모든 환경변수 키들:', Object.keys(process.env).filter(key => key.includes('KAKAO')));
+console.log('현재 환경:', process.env.NODE_ENV);
+console.log('BASE_URL:', BASE_URL);
+console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
+console.log('KAKAO_CLIENT_ID 설정됨:', !!KAKAO_CLIENT_ID);
+console.log('KAKAO_CLIENT_SECRET 설정됨:', !!KAKAO_CLIENT_SECRET);
+console.log('VERCEL 정보:', {
+    VERCEL_URL: process.env.VERCEL_URL,
+    VERCEL_ENV: process.env.VERCEL_ENV
+});
 console.log('===============================');
 
 export class KakaoAuthService {
@@ -63,17 +95,13 @@ export class KakaoAuthService {
         this.validateEnvVars();
 
         // 디버깅을 위한 로그 추가
-        console.log('=== 카카오 OAuth 디버그 정보 ===');
-        console.log('KAKAO_CLIENT_ID:', KAKAO_CLIENT_ID);
-        console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
-        console.log('NODE_ENV:', process.env.NODE_ENV);
-        console.log('VERCEL_URL:', process.env.VERCEL_URL);
-        console.log('VERCEL_ENV:', process.env.VERCEL_ENV);
-        console.log('현재 시간:', new Date().toISOString());
-
+        console.log('=== 카카오 OAuth 요청 정보 ===');
+        console.log('인증 시간:', new Date().toISOString());
+        console.log('사용 중인 리다이렉트 URI:', KAKAO_REDIRECT_URI);
+        
         const params = new URLSearchParams({
             client_id: KAKAO_CLIENT_ID!,
-            redirect_uri: KAKAO_REDIRECT_URI!,
+            redirect_uri: KAKAO_REDIRECT_URI,
             response_type: 'code',
             scope: 'profile_nickname,profile_image,account_email'
         });
