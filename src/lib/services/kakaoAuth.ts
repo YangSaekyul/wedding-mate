@@ -1,8 +1,13 @@
 import axios from 'axios';
 
-// 환경에 따른 base URL 결정 함수
+// 환경에 따른 base URL 결정 함수 (수정된 버전)
 const getBaseUrl = () => {
-    // 환경변수에서 직접 설정된 리다이렉트 URI가 있다면 그것을 사용
+    // 1순위: 우리가 직접 설정한 고정 URL 사용 (가장 안정적)
+    if (process.env.NEXT_PUBLIC_SITE_URL) {
+        return process.env.NEXT_PUBLIC_SITE_URL;
+    }
+
+    // 2순위: 환경변수에서 직접 설정된 리다이렉트 URI가 있다면 그것을 사용
     if (process.env.KAKAO_REDIRECT_URI) {
         try {
             const url = new URL(process.env.KAKAO_REDIRECT_URI);
@@ -12,17 +17,17 @@ const getBaseUrl = () => {
         }
     }
 
-    // 개발 환경
+    // 3순위: 개발 환경
     if (process.env.NODE_ENV === 'development') {
         return 'http://localhost:3000';
     }
     
-    // Vercel 배포 환경
+    // 4순위: Vercel의 동적 URL (이제 사용하지 않지만 만약을 위해 남겨둠)
     if (process.env.VERCEL_URL) {
         return `https://${process.env.VERCEL_URL}`;
     }
 
-    // 프로덕션 환경의 기본값
+    // 최후의 보루: 하드코딩된 프로덕션 URL
     return 'https://our-wedding-mate.vercel.app';
 };
 
@@ -66,6 +71,7 @@ const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI || `${BASE_URL}/auth/k
 // 환경변수 로딩 디버그 로그
 console.log('=== 환경변수 로딩 디버그 ===');
 console.log('현재 환경:', process.env.NODE_ENV);
+console.log('NEXT_PUBLIC_SITE_URL:', process.env.NEXT_PUBLIC_SITE_URL);
 console.log('BASE_URL:', BASE_URL);
 console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
 console.log('KAKAO_CLIENT_ID 설정됨:', !!KAKAO_CLIENT_ID);
