@@ -70,9 +70,10 @@ console.log('BASE_URL:', BASE_URL);
 console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
 console.log('KAKAO_CLIENT_ID 설정됨:', !!KAKAO_CLIENT_ID);
 console.log('KAKAO_CLIENT_SECRET 설정됨:', !!KAKAO_CLIENT_SECRET);
-console.log('VERCEL 정보:', {
+console.log('VERCEL 정보 (로컬에서는 undefined가 정상):', {
     VERCEL_URL: process.env.VERCEL_URL,
-    VERCEL_ENV: process.env.VERCEL_ENV
+    VERCEL_ENV: process.env.VERCEL_ENV,
+    환경: process.env.NODE_ENV === 'development' ? '로컬 개발 환경' : 'Vercel 배포 환경'
 });
 console.log('===============================');
 
