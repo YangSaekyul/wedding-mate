@@ -36,6 +36,14 @@ const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
 const KAKAO_REDIRECT_URI = process.env.KAKAO_REDIRECT_URI;
 
+// 환경변수 로딩 디버그 로그
+console.log('=== 환경변수 로딩 디버그 ===');
+console.log('process.env.KAKAO_CLIENT_ID:', process.env.KAKAO_CLIENT_ID);
+console.log('process.env.KAKAO_REDIRECT_URI:', process.env.KAKAO_REDIRECT_URI);
+console.log('process.env.NODE_ENV:', process.env.NODE_ENV);
+console.log('모든 환경변수 키들:', Object.keys(process.env).filter(key => key.includes('KAKAO')));
+console.log('===============================');
+
 export class KakaoAuthService {
     // 환경변수 검증
     private static validateEnvVars(): void {
@@ -59,6 +67,9 @@ export class KakaoAuthService {
         console.log('KAKAO_CLIENT_ID:', KAKAO_CLIENT_ID);
         console.log('KAKAO_REDIRECT_URI:', KAKAO_REDIRECT_URI);
         console.log('NODE_ENV:', process.env.NODE_ENV);
+        console.log('VERCEL_URL:', process.env.VERCEL_URL);
+        console.log('VERCEL_ENV:', process.env.VERCEL_ENV);
+        console.log('현재 시간:', new Date().toISOString());
 
         const params = new URLSearchParams({
             client_id: KAKAO_CLIENT_ID!,
