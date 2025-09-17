@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DDayModel } from '@/lib/models/DDay';
 import { verifyToken, extractTokenFromHeader } from '@/lib/utils/jwt';
-import { initDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
 // 사용자의 모든 D-DAY 목록 조회
 export async function GET(request: NextRequest) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);
@@ -44,9 +40,6 @@ export async function GET(request: NextRequest) {
 // 새 D-DAY 생성
 export async function POST(request: NextRequest) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);
@@ -62,10 +55,10 @@ export async function POST(request: NextRequest) {
         }
 
         const payload = await verifyToken(token);
-        const { title, target_date, description } = await request.json();
+        const { title, targetDate, description } = await request.json();
 
         // 필수 필드 검증
-        if (!title || !target_date) {
+        if (!title || !targetDate) {
             return NextResponse.json(
                 {
                     error: 'MISSING_REQUIRED_FIELDS',
@@ -76,8 +69,8 @@ export async function POST(request: NextRequest) {
         }
 
         // 날짜 형식 검증
-        const targetDate = new Date(target_date);
-        if (isNaN(targetDate.getTime())) {
+        const targetDateObj = new Date(targetDate);
+        if (isNaN(targetDateObj.getTime())) {
             return NextResponse.json(
                 {
                     error: 'INVALID_DATE',
@@ -88,9 +81,9 @@ export async function POST(request: NextRequest) {
         }
 
         const ddayData = {
-            user_id: payload.userId,
+            userId: payload.userId,
             title: title.trim(),
-            target_date,
+            targetDate: targetDateObj,
             description: description?.trim()
         };
 

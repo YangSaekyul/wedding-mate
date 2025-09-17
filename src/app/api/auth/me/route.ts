@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UserModel } from '@/lib/models/User';
 import { verifyToken, extractTokenFromHeader } from '@/lib/utils/jwt';
-import { initDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);
@@ -41,9 +37,9 @@ export async function GET(request: NextRequest) {
             user: {
                 id: user.id,
                 nickname: user.nickname,
-                profile_image: user.profile_image,
+                profileImage: user.profileImage,
                 email: user.email,
-                created_at: user.created_at
+                createdAt: user.createdAt
             }
         });
     } catch (error) {

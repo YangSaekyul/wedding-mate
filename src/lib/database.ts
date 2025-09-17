@@ -1,55 +1,37 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
+import { PrismaClient } from '@prisma/client';
 
-// SQLite 데이터베이스 설정
-const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'wedding-mate.db');
-export const db = new sqlite3.Database(dbPath);
+// Prisma 클라이언트 설정 (싱글톤 패턴)
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-// 데이터베이스 테이블 초기화
-export const initDatabase = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-        db.serialize(() => {
-            // 사용자 테이블
-            db.run(`
-                CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    kakao_id TEXT UNIQUE NOT NULL,
-                    nickname TEXT NOT NULL,
-                    profile_image TEXT,
-                    email TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-                )
-            `, (err) => {
-                if (err) reject(err);
-            });
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+});
 
-            // D-DAY 테이블
-            db.run(`
-                CREATE TABLE IF NOT EXISTS ddays (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    title TEXT NOT NULL,
-                    target_date DATE NOT NULL,
-                    description TEXT,
-                    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-                )
-            `, (err) => {
-                if (err) reject(err);
-                else resolve();
-            });
-        });
-    });
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+
+// 데이터베이스 연결 테스트
+export const testConnection = async (): Promise<boolean> => {
+  try {
+    await prisma.$connect();
+    console.log('데이터베이스 연결 성공');
+    return true;
+  } catch (error) {
+    console.error('데이터베이스 연결 실패:', error);
+    return false;
+  }
 };
 
 // 데이터베이스 연결 종료
-export const closeDatabase = (): Promise<void> => {
-    return new Promise((resolve) => {
-        db.close((err) => {
-            if (err) console.error('Database close error:', err);
-            resolve();
-        });
-    });
+export const closeDatabase = async (): Promise<void> => {
+  try {
+    await prisma.$disconnect();
+    console.log('데이터베이스 연결 종료');
+  } catch (error) {
+    console.error('데이터베이스 종료 오류:', error);
+  }
 };
+
+// 기존 코드와의 호환성을 위한 별칭
+export const db = prisma;

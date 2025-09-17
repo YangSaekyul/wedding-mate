@@ -1,0 +1,43 @@
+// Wedding Mate - Prisma 스키마 파일
+// PostgreSQL 데이터베이스 설정
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 모델 (카카오 로그인)
+model User {
+  id            Int      @id @default(autoincrement())
+  kakaoId       String   @unique @map("kakao_id") @db.VarChar(255)
+  nickname      String   @db.VarChar(255)
+  profileImage  String?  @map("profile_image")
+  email         String?  @db.VarChar(255)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  // 관계: 사용자가 생성한 D-Day 목록
+  ddays         DDay[]
+  
+  @@map("users")
+}
+
+// D-Day 모델 (웨딩 일정 관리)
+model DDay {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  title       String   @db.VarChar(255)
+  targetDate  DateTime @map("target_date") @db.Date
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  // 관계: 해당 D-Day의 소유자
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("ddays")
+}

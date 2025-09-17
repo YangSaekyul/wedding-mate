@@ -1,95 +1,85 @@
-import { db } from '../database';
+import { prisma } from '../database';
+import { User } from '@prisma/client';
 
-export interface User {
-    id: number;
-    kakao_id: string;
-    nickname: string;
-    profile_image?: string;
-    email?: string;
-    created_at: string;
-    updated_at: string;
-}
+export type { User } from '@prisma/client';
 
 export interface CreateUserData {
-    kakao_id: string;
+    kakaoId: string;
     nickname: string;
-    profile_image?: string;
+    profileImage?: string;
+    email?: string;
+}
+
+export interface UpdateUserData {
+    nickname?: string;
+    profileImage?: string;
     email?: string;
 }
 
 export class UserModel {
     // 카카오 ID로 사용자 조회
-    static findByKakaoId(kakaoId: string): Promise<User | null> {
-        return new Promise((resolve, reject) => {
-            db.get(
-                'SELECT * FROM users WHERE kakao_id = ?',
-                [kakaoId],
-                (err, row: User) => {
-                    if (err) reject(err);
-                    else resolve(row || null);
-                }
-            );
-        });
+    static async findByKakaoId(kakaoId: string): Promise<User | null> {
+        try {
+            return await prisma.user.findUnique({
+                where: { kakaoId }
+            });
+        } catch (error) {
+            console.error('사용자 조회 오류 (카카오 ID):', error);
+            throw error;
+        }
     }
 
     // ID로 사용자 조회
-    static findById(id: number): Promise<User | null> {
-        return new Promise((resolve, reject) => {
-            db.get(
-                'SELECT * FROM users WHERE id = ?',
-                [id],
-                (err, row: User) => {
-                    if (err) reject(err);
-                    else resolve(row || null);
-                }
-            );
-        });
+    static async findById(id: number): Promise<User | null> {
+        try {
+            return await prisma.user.findUnique({
+                where: { id }
+            });
+        } catch (error) {
+            console.error('사용자 조회 오류 (ID):', error);
+            throw error;
+        }
     }
 
     // 새 사용자 생성
-    static create(userData: CreateUserData): Promise<User> {
-        return new Promise((resolve, reject) => {
-            const { kakao_id, nickname, profile_image, email } = userData;
-
-            db.run(
-                `INSERT INTO users (kakao_id, nickname, profile_image, email) 
-                 VALUES (?, ?, ?, ?)`,
-                [kakao_id, nickname, profile_image, email],
-                function (err) {
-                    if (err) reject(err);
-                    else {
-                        // 생성된 사용자 정보 반환
-                        UserModel.findById(this.lastID)
-                            .then(user => resolve(user!))
-                            .catch(reject);
-                    }
-                }
-            );
-        });
+    static async create(userData: CreateUserData): Promise<User> {
+        try {
+            return await prisma.user.create({
+                data: userData
+            });
+        } catch (error) {
+            console.error('사용자 생성 오류:', error);
+            throw error;
+        }
     }
 
     // 사용자 정보 업데이트
-    static update(id: number, userData: Partial<CreateUserData>): Promise<User> {
-        return new Promise((resolve, reject) => {
-            const { nickname, profile_image, email } = userData;
+    static async update(id: number, userData: UpdateUserData): Promise<User> {
+        try {
+            return await prisma.user.update({
+                where: { id },
+                data: userData
+            });
+        } catch (error) {
+            console.error('사용자 업데이트 오류:', error);
+            throw error;
+        }
+    }
 
-            db.run(
-                `UPDATE users SET 
-                 nickname = COALESCE(?, nickname),
-                 profile_image = COALESCE(?, profile_image),
-                 email = COALESCE(?, email),
-                 updated_at = CURRENT_TIMESTAMP
-                 WHERE id = ?`,
-                [nickname, profile_image, email, id],
-                (err) => {
-                    if (err) reject(err);
-                    else {
-                        UserModel.findById(id)
-                            .then(user => resolve(user!))
-                            .catch(reject);
+    // 사용자와 연관된 D-Day 목록 포함 조회
+    static async findByIdWithDDays(id: number) {
+        try {
+            return await prisma.user.findUnique({
+                where: { id },
+                include: {
+                    ddays: {
+                        orderBy: { targetDate: 'asc' }
                     }
                 }
-            );
-        });
+            });
+        } catch (error) {
+            console.error('사용자 조회 오류 (D-Day 포함):', error);
+            throw error;
+        }
     }
 }

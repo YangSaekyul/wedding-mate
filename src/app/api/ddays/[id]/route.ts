@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DDayModel } from '@/lib/models/DDay';
 import { verifyToken, extractTokenFromHeader } from '@/lib/utils/jwt';
-import { initDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,9 +10,6 @@ export async function GET(
     { params }: { params: { id: string } }
 ) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);
@@ -84,9 +80,6 @@ export async function PUT(
     { params }: { params: { id: string } }
 ) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);
@@ -103,7 +96,7 @@ export async function PUT(
 
         const payload = await verifyToken(token);
         const ddayId = parseInt(params.id);
-        const { title, target_date, description } = await request.json();
+        const { title, targetDate, description } = await request.json();
 
         if (isNaN(ddayId)) {
             return NextResponse.json(
@@ -128,9 +121,9 @@ export async function PUT(
         }
 
         // 날짜 형식 검증 (제공된 경우)
-        if (target_date) {
-            const targetDate = new Date(target_date);
-            if (isNaN(targetDate.getTime())) {
+        if (targetDate) {
+            const targetDateObj = new Date(targetDate);
+            if (isNaN(targetDateObj.getTime())) {
                 return NextResponse.json(
                     {
                         error: 'INVALID_DATE',
@@ -144,7 +137,7 @@ export async function PUT(
         const updateData: any = {};
 
         if (title !== undefined) updateData.title = title.trim();
-        if (target_date !== undefined) updateData.target_date = target_date;
+        if (targetDate !== undefined) updateData.targetDate = new Date(targetDate);
         if (description !== undefined) updateData.description = description?.trim();
 
         const dday = await DDayModel.update(ddayId, updateData);
@@ -171,9 +164,6 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         // 토큰 추출 및 검증
         const authHeader = request.headers.get('authorization');
         const token = extractTokenFromHeader(authHeader || undefined);

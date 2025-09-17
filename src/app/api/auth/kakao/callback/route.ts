@@ -2,15 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { KakaoAuthService } from '@/lib/services/kakaoAuth';
 import { UserModel, CreateUserData } from '@/lib/models/User';
 import { generateToken } from '@/lib/utils/jwt';
-import { initDatabase } from '@/lib/database';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
     try {
-        // 데이터베이스 초기화
-        await initDatabase();
-
         const { code } = await request.json();
 
         if (!code) {
@@ -35,9 +31,9 @@ export async function POST(request: NextRequest) {
         if (!user) {
             // 새 사용자 생성
             const newUserData: CreateUserData = {
-                kakao_id: kakaoUser.id.toString(),
+                kakaoId: kakaoUser.id.toString(),
                 nickname: kakaoUser.properties.nickname,
-                profile_image: kakaoUser.properties.profile_image,
+                profileImage: kakaoUser.properties.profile_image,
                 email: kakaoUser.kakao_account.email
             };
 
@@ -46,7 +42,7 @@ export async function POST(request: NextRequest) {
             // 기존 사용자 정보 업데이트 (프로필 이미지나 닉네임이 변경되었을 수 있음)
             user = await UserModel.update(user.id, {
                 nickname: kakaoUser.properties.nickname,
-                profile_image: kakaoUser.properties.profile_image,
+                profileImage: kakaoUser.properties.profile_image,
                 email: kakaoUser.kakao_account.email
             });
         }
@@ -60,7 +56,7 @@ export async function POST(request: NextRequest) {
             user: {
                 id: user.id,
                 nickname: user.nickname,
-                profile_image: user.profile_image,
+                profileImage: user.profileImage,
                 email: user.email
             }
         });
