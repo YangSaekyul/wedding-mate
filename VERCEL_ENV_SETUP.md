@@ -10,13 +10,13 @@ Vercel 대시보드에서 다음 환경변수들을 설정해야 합니다:
 
 ### 1. JWT Secret Key
 ```
-JWT_SECRET=6b094868d45360f3c0a2ee5d7d38ecb4
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 ```
 
 ### 2. Kakao OAuth 설정
 ```
-KAKAO_CLIENT_ID=2686664967d24e41a3d0a1c63c96cd48
-KAKAO_CLIENT_SECRET=b0797e3b64fdefd1434ec4b4887165ed
+KAKAO_CLIENT_ID=your_kakao_client_id_here
+KAKAO_CLIENT_SECRET=your_kakao_client_secret_here
 KAKAO_REDIRECT_URI=https://our-wedding-mate.vercel.app/auth/kakao/callback
 ```
 
@@ -53,6 +53,13 @@ NODE_ENV=production
 - Vercel 배포가 404 오류를 반환
 - API 엔드포인트가 500 오류를 반환 (환경변수 누락)
 - 카카오 OAuth 리다이렉트 URI가 localhost로 설정되어 있음
+
+## 보안 주의사항
+
+⚠️ **중요**: 실제 키 값들은 절대 Git에 커밋하지 마세요!
+- 카카오 개발자 콘솔에서 새로운 키를 발급받으세요
+- 로컬 개발용 `.env.local` 파일을 별도로 생성하세요
+- Vercel 환경변수는 대시보드에서만 설정하세요
 
 ## 해결 후 예상 결과
 
